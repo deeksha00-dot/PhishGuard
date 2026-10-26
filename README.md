@@ -4,6 +4,20 @@ A college hackathon prototype that analyses suspicious emails, SMS messages and 
 
 > **Honest note:** the detector is a **rule-based engine** (regular expressions + URL checks). It does **not** use a trained AI/ML model. The score is a heuristic estimate, not a verified probability.
 
+## Screenshots
+
+### Dashboard
+![PhishGuard Dashboard](screenshots/home.png)
+
+### Phishing Analysis
+![PhishGuard Risk Analysis](screenshots/high-risk-analysis.png)
+
+### Analysis History
+![PhishGuard Analysis History](screenshots/history.png)
+
+
+
+
 ## 1. Problem statement
 Phishing and scam messages (fake bank alerts, OTP theft, prize scams, parcel fees) cause large financial losses, and most people cannot tell why a message is suspicious. Existing tools are often black boxes or need cloud services.
 
