@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhishGuard - AI Phishing &amp; Scam Detector</title>
+  <meta name="description" content="Paste a suspicious email, SMS or link and PhishGuard explains the warning signs.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#analyze">Skip to analyzer</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#dashboard" aria-label="PhishGuard home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 2.5 4.5 7v8.2c0 7 4.8 12.4 11.5 14.3 6.7-1.9 11.5-7.3 11.5-14.3V7L16 2.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="m10.5 16.2 4 4 7-8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>PhishGuard</span>
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="#dashboard">Dashboard</a></li>
+          <li><a href="#analyze">Analyze</a></li>
+          <li><a href="#history">History</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="dashboard" class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">Detect scams before they reach you.</h1>
+        <p class="lead">Paste a suspicious email, SMS or link. PhishGuard checks it against a transparent set of phishing rules and tells you exactly which warning signs it found, and why.</p>
+        <p class="lead-note">Rule-based and fully offline: nothing you paste leaves this computer, and links are never opened.</p>
+        <a class="btn btn-primary" href="#analyze">Analyze a message</a>
+      </div>
+      <dl class="stats" aria-label="Your recent activity" id="stats">
+        <div class="stat"><dt>Messages checked</dt><dd id="stat-total">0</dd></div>
+        <div class="stat"><dt>Highest risk seen</dt><dd id="stat-max">-</dd></div>
+        <div class="stat"><dt>Average score</dt><dd id="stat-avg">-</dd></div>
+        <p class="stats-note">Based on your last 20 saved analyses.</p>
+      </dl>
+    </section>
+
+    <section id="analyze" class="wrap workspace" aria-labelledby="analyze-title">
+      <div class="card input-card">
+        <h2 id="analyze-title">Analyze content</h2>
+        <label class="field-label" for="content-input">Suspicious email, SMS or URL</label>
+        <textarea id="content-input" rows="9" maxlength="{{ max_length }}" placeholder="Paste the message or link here..." aria-describedby="char-count"></textarea>
+        <div class="field-row">
+          <div class="select-wrap">
+            <label class="field-label" for="input-type">Content type</label>
+            <select id="input-type">
+              <option value="auto">Auto detect</option>
+              <option value="email_sms">Email / SMS</option>
+              <option value="url">URL</option>
+            </select>
+          </div>
+          <span id="char-count" class="char-count" aria-live="polite">0 / {{ max_length }}</span>
+        </div>
+        <div class="actions">
+          <button id="analyze-btn" class="btn btn-primary" type="button">Analyze Message</button>
+          <button id="clear-btn" class="btn btn-ghost" type="button">Clear</button>
+        </div>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+
+        <div class="examples">
+          <h3>Try an example</h3>
+          <div class="chip-row" id="examples">
+            <button type="button" class="chip" data-example="otp">Bank OTP scam</button>
+            <button type="button" class="chip" data-example="prize">Prize winner</button>
+            <button type="button" class="chip" data-example="ip">IP address link</button>
+            <button type="button" class="chip" data-example="safe">Friendly message</button>
+            <button type="button" class="chip" data-example="legit">Real OTP notice</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card result-card" id="results" aria-live="polite" tabindex="-1">
+        <div id="result-empty" class="empty">
+          <svg viewBox="0 0 48 48" aria-hidden="true" class="empty-icon"><path d="M24 4 7 11v12c0 10.5 7 18 17 21 10-3 17-10.5 17-21V11L24 4Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+          <h2>Your result appears here</h2>
+          <p>Paste something on the left and choose <strong>Analyze Message</strong>. You will get a score, the warning signs behind it, and what to do next.</p>
+        </div>
+        <div id="result-loading" class="loading" hidden>
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Analyzing...</p>
+        </div>
+        <div id="result-body" hidden></div>
+      </div>
+    </section>
+
+    <section id="history" class="wrap" aria-labelledby="history-title">
+      <div class="section-head">
+        <h2 id="history-title">Recent analyses</h2>
+        <button id="clear-history-btn" class="btn btn-danger" type="button">Clear history</button>
+      </div>
+      <p class="muted small">History is stored in a local SQLite file on the computer running PhishGuard. It is shared by everyone who uses this copy because there are no user accounts.</p>
+      <ul id="history-list" class="history-list"></ul>
+      <p id="history-empty" class="empty-line" hidden>No analyses yet. Run one above and it will show up here.</p>
+      <p id="history-error" class="form-error" role="alert" hidden></p>
+    </section>
+
+    <section id="about" class="wrap" aria-labelledby="about-title">
+      <h2 id="about-title">About PhishGuard</h2>
+      <div class="about-grid">
+        <div class="card">
+          <h3>How it works</h3>
+          <p>PhishGuard is a <strong>rule-based</strong> detector, not a trained AI model. It looks for urgency, requests for OTPs or passwords, prize and refund scams, secrecy, risky attachments and suspicious link structure. Each finding adds a fixed number of points, each category has a ceiling, and the total is shown as a score from 0 to 100.</p>
+          <p class="levels"><span class="lvl lvl-low">Low 0-24</span><span class="lvl lvl-medium">Medium 25-49</span><span class="lvl lvl-high">High 50-74</span><span class="lvl lvl-critical">Critical 75-100</span></p>
+          <p class="muted small">Links are inspected as text only. PhishGuard never opens them, so it cannot judge a site's live reputation or content.</p>
+        </div>
+        <div class="card">
+          <h3>Stay safe</h3>
+          <ul class="tips">
+            <li>Banks and companies never ask for your OTP, PIN or password.</li>
+            <li>Go to the official website yourself instead of using a link in a message.</li>
+            <li>Pressure and secrecy are classic scam tactics. Pause and verify.</li>
+            <li>Never pay a fee to receive a prize, refund or parcel.</li>
+          </ul>
+        </div>
+        <div class="card notice">
+          <h3>Disclaimer</h3>
+          <p>The risk score is a heuristic estimate, not a verified probability that something is malicious. A low score does not prove a message is safe, and a high score does not prove it is a scam. Treat PhishGuard as a demonstration tool and always verify through official channels. Do not paste real passwords or OTPs.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <p>PhishGuard is a college hackathon prototype. Detection is rule-based and runs entirely on this machine.</p>
+  </footer>
+
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog" class="dialog-body">
+      <h2 id="confirm-title">Clear all history?</h2>
+      <p>This permanently deletes every saved analysis from the local database.</p>
+      <div class="actions">
+        <button value="cancel" class="btn btn-ghost">Keep history</button>
+        <button value="confirm" class="btn btn-danger" id="confirm-yes">Delete everything</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
