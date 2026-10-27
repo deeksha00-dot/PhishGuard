@@ -1,3 +1,7 @@
+## 🚀 Live Demo
+
+Try PhishGuard here: [Open PhishGuard](https://YOUR-VERCEL-DOMAIN)
+
 # PhishGuard - AI Phishing & Scam Detector
 
 A college hackathon prototype that analyses suspicious emails, SMS messages and URLs and explains the warning signs it finds.
