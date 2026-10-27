@@ -17,7 +17,11 @@ MAX_TEXT_LENGTH = 10_000
 def create_app(db_path=None):
     """Application factory. Tests pass a temporary db_path; normal runs use phishguard.db."""
     app = Flask(__name__)
-    app.config["DB_PATH"] = db_path or database.DEFAULT_DB_PATH
+    app.config["DB_PATH"] = db_path or (
+        "/tmp/phishguard.db"
+        if os.environ.get("VERCEL")
+        else database.DEFAULT_DB_PATH
+    )
     app.config["MAX_CONTENT_LENGTH"] = 128 * 1024  # reject huge request bodies early
     database.init_db(app.config["DB_PATH"])  # tables are created automatically
 
